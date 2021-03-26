@@ -17,7 +17,6 @@ namespace BlazorHero.CleanArchitecture.Client.Pages.Identity
         {
             await GetUsersAsync();
         }
-
         private async Task GetUsersAsync()
         {
             var response = await _userManager.GetAllAsync();
@@ -29,7 +28,7 @@ namespace BlazorHero.CleanArchitecture.Client.Pages.Identity
             {
                 foreach (var message in response.Messages)
                 {
-                    _snackBar.Add(message, Severity.Error);
+                    _snackBar.Add(localizer[message], Severity.Error);
                 }
             }
         }
@@ -43,7 +42,8 @@ namespace BlazorHero.CleanArchitecture.Client.Pages.Identity
             }
             return false;
         }
-        async Task InvokeModal()
+
+        private async Task InvokeModal()
         {
             var parameters = new DialogParameters();
             var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, DisableBackdropClick = true };
@@ -53,11 +53,17 @@ namespace BlazorHero.CleanArchitecture.Client.Pages.Identity
             {
                 await GetUsersAsync();
             }
-
         }
-        async Task ViewProfile(string userId)
+
+        private void ViewProfile(string userId)
         {
             _navigationManager.NavigateTo($"/user-profile/{userId}");
+        }
+
+        private void ManageRoles(string userId, string email)
+        {
+            if (email == "mukesh@blazorhero.com") _snackBar.Add(localizer["Not Allowed."], Severity.Error);
+            else _navigationManager.NavigateTo($"/identity/user-roles/{userId}");
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using BlazorHero.CleanArchitecture.Application.Requests.Identity;
-using BlazorHero.CleanArchitecture.Application.Responses.Identity;
+﻿using BlazorHero.CleanArchitecture.Application.Responses.Identity;
 using MudBlazor;
 using System;
 using System.Collections.Generic;
@@ -18,7 +17,6 @@ namespace BlazorHero.CleanArchitecture.Client.Pages.Identity
         {
             await GetRolesAsync();
         }
-
         private async Task GetRolesAsync()
         {
             var response = await _roleManager.GetRolesAsync();
@@ -30,14 +28,16 @@ namespace BlazorHero.CleanArchitecture.Client.Pages.Identity
             {
                 foreach (var message in response.Messages)
                 {
-                    _snackBar.Add(message, Severity.Error);
+                    _snackBar.Add(localizer[message], Severity.Error);
                 }
             }
         }
+
         private async Task Delete(string id)
         {
+            string deleteContent = localizer["Delete Content"];
             var parameters = new DialogParameters();
-            parameters.Add("ContentText", $"Do you want to delete the role with Id {id} ?");
+            parameters.Add("ContentText", string.Format(deleteContent, id));
             var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, DisableBackdropClick = true };
             var dialog = _dialogService.Show<Shared.Dialogs.DeleteConfirmation>("Delete", parameters, options);
             var result = await dialog.Result;
@@ -47,24 +47,23 @@ namespace BlazorHero.CleanArchitecture.Client.Pages.Identity
                 if (response.Succeeded)
                 {
                     await Reset();
-                    _snackBar.Add(response.Messages[0], Severity.Success);
+                    _snackBar.Add(localizer[response.Messages[0]], Severity.Success);
                 }
                 else
                 {
                     await Reset();
                     foreach (var message in response.Messages)
                     {
-                        _snackBar.Add(message, Severity.Error);
+                        _snackBar.Add(localizer[message], Severity.Error);
                     }
                 }
             }
-
-            
         }
-        async Task InvokeModal(string id = null)
+
+        private async Task InvokeModal(string id = null)
         {
             var parameters = new DialogParameters();
-            if(id != null)
+            if (id != null)
             {
                 role = RoleList.FirstOrDefault(c => c.Id == id);
                 parameters.Add("Id", role.Id);
@@ -77,8 +76,8 @@ namespace BlazorHero.CleanArchitecture.Client.Pages.Identity
             {
                 await Reset();
             }
-
         }
+
         private async Task Reset()
         {
             role = new RoleResponse();
@@ -93,6 +92,11 @@ namespace BlazorHero.CleanArchitecture.Client.Pages.Identity
                 return true;
             }
             return false;
+        }
+
+        private void ManagePermissions(string roleId)
+        {
+            _navigationManager.NavigateTo($"/identity/role-permissions/{roleId}");
         }
     }
 }

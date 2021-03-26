@@ -4,13 +4,11 @@
 @inject Microsoft.Extensions.Localization.IStringLocalizer<Login> localizer
 <EditForm Model="@model" OnValidSubmit="SubmitAsync">
     <MudGrid>
-
         <MudItem xs="12">
             <div class="d-flex justify-center">
                 <MudIcon Icon="@CustomIcons.BlazorHero" Color="Color.Primary" Size="Size.Large" ViewBox="0 0 500 500" Style="width:100px; height:100px;" />
             </div>
         </MudItem>
-
         <DataAnnotationsValidator />
         <MudItem xs="12">
             <div class="d-flex justify-center">
@@ -38,10 +36,10 @@
             <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Style="width: 100%;">@localizer["Sign In"]</MudButton>
         </MudItem>
         <MudItem xs="12">
-            <MudButton OnClick="FillAdminstratorCredentials">Fill Administrator Credentials</MudButton>
+            <MudButton OnClick="FillAdminstratorCredentials">@localizer["Fill Administrator Credentials"]</MudButton>
         </MudItem>
         <MudItem xs="12">
-            <MudButton OnClick="FillBasicUserCredentials">Fill Basic User Credentials</MudButton>
+            <MudButton OnClick="FillBasicUserCredentials">@localizer["Fill Basic User Credentials"]</MudButton>
         </MudItem>
     </MudGrid>
 </EditForm>

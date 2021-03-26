@@ -1,6 +1,6 @@
 ﻿using BlazorHero.CleanArchitecture.Application.Interfaces.Services.Account;
 using BlazorHero.CleanArchitecture.Application.Requests.Identity;
-using BlazorHero.CleanArchitecture.Shared.Models.Identity;
+using BlazorHero.CleanArchitecture.Application.Models.Identity;
 using BlazorHero.CleanArchitecture.Shared.Wrapper;
 using Microsoft.AspNetCore.Identity;
 using System.Linq;
@@ -53,6 +53,23 @@ namespace BlazorHero.CleanArchitecture.Infrastructure.Services.Identity
             var identityResult = await _userManager.UpdateAsync(user);
             var errors = identityResult.Errors.Select(e => e.Description).ToList();
             await _signInManager.RefreshSignInAsync(user);
+            return identityResult.Succeeded ? Result.Success() : Result.Fail(errors);
+        }
+
+        public async Task<IResult<string>> GetProfilePictureAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return Result<string>.Fail("User Not Found");
+            return Result<string>.Success(data: user.ProfilePictureDataUrl);
+        }
+
+        public async Task<IResult> UpdateProfilePictureAsync(UpdateProfilePictureRequest request, string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return Result.Fail("User Not Found");
+            user.ProfilePictureDataUrl = request.ProfilePictureDataUrl;
+            var identityResult = await _userManager.UpdateAsync(user);
+            var errors = identityResult.Errors.Select(e => e.Description).ToList();
             return identityResult.Succeeded ? Result.Success() : Result.Fail(errors);
         }
     }

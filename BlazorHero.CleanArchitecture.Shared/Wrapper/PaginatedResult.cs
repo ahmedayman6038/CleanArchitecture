@@ -15,13 +15,14 @@ namespace BlazorHero.CleanArchitecture.Shared.Wrapper
         internal PaginatedResult(bool succeeded, List<T> data = default, List<string> messages = null, int count = 0, int page = 1, int pageSize = 10)
         {
             Data = data;
-            Page = page;
+            CurrentPage = page;
             Succeeded = succeeded;
+            PageSize = pageSize;
             TotalPages = (int)Math.Ceiling(count / (double)pageSize);
             TotalCount = count;
         }
 
-        public static new PaginatedResult<T> Failure(List<string> messages)
+        public static PaginatedResult<T> Failure(List<string> messages)
         {
             return new PaginatedResult<T>(false, default, messages);
         }
@@ -31,14 +32,15 @@ namespace BlazorHero.CleanArchitecture.Shared.Wrapper
             return new PaginatedResult<T>(true, data, null, count, page, pageSize);
         }
 
-        public int Page { get; set; }
+        public int CurrentPage { get; set; }
 
         public int TotalPages { get; set; }
 
         public int TotalCount { get; set; }
+        public int PageSize { get; set; }
 
-        public bool HasPreviousPage => Page > 1;
+        public bool HasPreviousPage => CurrentPage > 1;
 
-        public bool HasNextPage => Page < TotalPages;
+        public bool HasNextPage => CurrentPage < TotalPages;
     }
 }

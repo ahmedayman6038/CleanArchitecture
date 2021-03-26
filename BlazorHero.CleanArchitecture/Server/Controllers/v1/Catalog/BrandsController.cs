@@ -1,44 +1,44 @@
-﻿namespace BlazorHero.CleanArchitecture.Server.Controllers.v1.Catalog
+﻿using BlazorHero.CleanArchitecture.Application.Features.Brands.AddEdit;
+using BlazorHero.CleanArchitecture.Application.Features.Brands.Delete;
+using BlazorHero.CleanArchitecture.Application.Features.Brands.Queries.GetAll;
+using BlazorHero.CleanArchitecture.Application.Features.Brands.Queries.GetById;
+using BlazorHero.CleanArchitecture.Shared.Constants.Permission;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+
+namespace BlazorHero.CleanArchitecture.Server.Controllers.v1.Catalog
 {
     public class BrandsController : BaseApiController<BrandsController>
     {
-        //[HttpGet]
-        //public async Task<IActionResult> GetAll()
-        //{
-        //    var brands = await _mediator.Send(new GetAllBrandsCachedQuery());
-        //    return Ok(brands);
-        //}
+        [Authorize(Policy = Permissions.Brands.View)]
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var brands = await _mediator.Send(new GetAllBrandsQuery());
+            return Ok(brands);
+        }
 
-        //[HttpGet("{id}")]
-        //public async Task<IActionResult> GetById(int id)
-        //{
-        //    var brand = await _mediator.Send(new GetBrandByIdQuery() { Id = id });
-        //    return Ok(brand);
-        //}
+        [Authorize(Policy = Permissions.Brands.View)]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var brand = await _mediator.Send(new GetBrandByIdQuery() { Id = id });
+            return Ok(brand);
+        }
 
-        //// POST api/<controller>
-        //[HttpPost]
-        //public async Task<IActionResult> Post(CreateBrandCommand command)
-        //{
-        //    return Ok(await _mediator.Send(command));
-        //}
+        [Authorize(Policy = Permissions.Brands.Create)]
+        [HttpPost]
+        public async Task<IActionResult> Post(AddEditBrandCommand command)
+        {
+            return Ok(await _mediator.Send(command));
+        }
 
-        //// PUT api/<controller>/5
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> Put(int id, UpdateBrandCommand command)
-        //{
-        //    if (id != command.Id)
-        //    {
-        //        return BadRequest();
-        //    }
-        //    return Ok(await _mediator.Send(command));
-        //}
-
-        //// DELETE api/<controller>/5
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> Delete(int id)
-        //{
-        //    return Ok(await _mediator.Send(new DeleteBrandCommand { Id = id }));
-        //}
+        [Authorize(Policy = Permissions.Brands.Delete)]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            return Ok(await _mediator.Send(new DeleteBrandCommand { Id = id }));
+        }
     }
 }

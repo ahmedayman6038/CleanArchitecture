@@ -1,5 +1,6 @@
 ﻿using BlazorHero.CleanArchitecture.Application.Extensions;
 using BlazorHero.CleanArchitecture.Application.Interfaces.Repositories;
+using BlazorHero.CleanArchitecture.Application.Specifications;
 using BlazorHero.CleanArchitecture.Domain.Entities.Catalog;
 using BlazorHero.CleanArchitecture.Shared.Wrapper;
 using MediatR;
@@ -15,21 +16,23 @@ namespace BlazorHero.CleanArchitecture.Application.Features.Products.Queries.Get
     {
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
+        public string SearchString { get; set; }
 
-        public GetAllProductsQuery(int pageNumber, int pageSize)
+        public GetAllProductsQuery(int pageNumber, int pageSize, string searchString)
         {
             PageNumber = pageNumber;
             PageSize = pageSize;
+            SearchString = searchString;
         }
     }
 
     public class GGetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, PaginatedResult<GetAllPagedProductsResponse>>
     {
-        private readonly IProductRepository _repository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public GGetAllProductsQueryHandler(IProductRepository repository)
+        public GGetAllProductsQueryHandler(IUnitOfWork unitOfWork)
         {
-            _repository = repository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<PaginatedResult<GetAllPagedProductsResponse>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
@@ -40,12 +43,16 @@ namespace BlazorHero.CleanArchitecture.Application.Features.Products.Queries.Get
                 Name = e.Name,
                 Description = e.Description,
                 Rate = e.Rate,
-                Barcode = e.Barcode
+                Barcode = e.Barcode,
+                Brand = e.Brand.Name,
+                BrandId = e.BrandId
             };
-            var paginatedList = await _repository.Products
-                .Select(expression)
-                .ToPaginatedListAsync(request.PageNumber, request.PageSize);
-            return paginatedList;
+            var productFilterSpec = new ProductFilterSpecification(request.SearchString);
+            var data = await _unitOfWork.Repository<Product>().Entities
+               .Specify(productFilterSpec)
+               .Select(expression)
+               .ToPaginatedListAsync(request.PageNumber, request.PageSize);
+            return data;
         }
     }
 }

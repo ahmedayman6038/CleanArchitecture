@@ -15,107 +15,39 @@ namespace BlazorHero.CleanArchitecture.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("Identity")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.3")
+                .HasAnnotation("ProductVersion", "5.0.4")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("BlazorHero.CleanArchitecture.Domain.Entities.Catalog.Brand", b =>
+            modelBuilder.Entity("BlazorHero.CleanArchitecture.Application.Models.Chat.ChatHistory", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedOn")
+                    b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("DeletedBy")
+                    b.Property<string>("FromUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Message")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("DeletedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Tax")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<string>("ToUserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brands");
+                    b.HasIndex("FromUserId");
+
+                    b.HasIndex("ToUserId");
+
+                    b.ToTable("ChatHistory");
                 });
 
-            modelBuilder.Entity("BlazorHero.CleanArchitecture.Domain.Entities.Catalog.Product", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Barcode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("BrandId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("DeletedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImageURL")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Rate")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BrandId");
-
-                    b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("BlazorHero.CleanArchitecture.Shared.Models.Identity.BlazorHeroUser", b =>
+            modelBuilder.Entity("BlazorHero.CleanArchitecture.Application.Models.Identity.BlazorHeroUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -184,6 +116,15 @@ namespace BlazorHero.CleanArchitecture.Infrastructure.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("ProfilePictureDataUrl")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RefreshTokenExpiryTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -204,7 +145,84 @@ namespace BlazorHero.CleanArchitecture.Infrastructure.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", "Identity");
+                });
+
+            modelBuilder.Entity("BlazorHero.CleanArchitecture.Domain.Entities.Catalog.Brand", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Tax")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Brands");
+                });
+
+            modelBuilder.Entity("BlazorHero.CleanArchitecture.Domain.Entities.Catalog.Product", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Barcode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("BrandId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageDataURL")
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Rate")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BrandId");
+
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -231,7 +249,7 @@ namespace BlazorHero.CleanArchitecture.Infrastructure.Migrations
                         .HasDatabaseName("RoleNameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", "Identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -255,7 +273,7 @@ namespace BlazorHero.CleanArchitecture.Infrastructure.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("RoleClaims");
+                    b.ToTable("RoleClaims", "Identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -279,7 +297,7 @@ namespace BlazorHero.CleanArchitecture.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserClaims");
+                    b.ToTable("UserClaims", "Identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -301,7 +319,7 @@ namespace BlazorHero.CleanArchitecture.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserLogins");
+                    b.ToTable("UserLogins", "Identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -316,7 +334,7 @@ namespace BlazorHero.CleanArchitecture.Infrastructure.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("UserRoles");
+                    b.ToTable("UserRoles", "Identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -335,7 +353,22 @@ namespace BlazorHero.CleanArchitecture.Infrastructure.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("UserTokens");
+                    b.ToTable("UserTokens", "Identity");
+                });
+
+            modelBuilder.Entity("BlazorHero.CleanArchitecture.Application.Models.Chat.ChatHistory", b =>
+                {
+                    b.HasOne("BlazorHero.CleanArchitecture.Application.Models.Identity.BlazorHeroUser", "FromUser")
+                        .WithMany("ChatHistoryFromUsers")
+                        .HasForeignKey("FromUserId");
+
+                    b.HasOne("BlazorHero.CleanArchitecture.Application.Models.Identity.BlazorHeroUser", "ToUser")
+                        .WithMany("ChatHistoryToUsers")
+                        .HasForeignKey("ToUserId");
+
+                    b.Navigation("FromUser");
+
+                    b.Navigation("ToUser");
                 });
 
             modelBuilder.Entity("BlazorHero.CleanArchitecture.Domain.Entities.Catalog.Product", b =>
@@ -360,7 +393,7 @@ namespace BlazorHero.CleanArchitecture.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("BlazorHero.CleanArchitecture.Shared.Models.Identity.BlazorHeroUser", null)
+                    b.HasOne("BlazorHero.CleanArchitecture.Application.Models.Identity.BlazorHeroUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -369,7 +402,7 @@ namespace BlazorHero.CleanArchitecture.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("BlazorHero.CleanArchitecture.Shared.Models.Identity.BlazorHeroUser", null)
+                    b.HasOne("BlazorHero.CleanArchitecture.Application.Models.Identity.BlazorHeroUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -384,7 +417,7 @@ namespace BlazorHero.CleanArchitecture.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BlazorHero.CleanArchitecture.Shared.Models.Identity.BlazorHeroUser", null)
+                    b.HasOne("BlazorHero.CleanArchitecture.Application.Models.Identity.BlazorHeroUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -393,11 +426,18 @@ namespace BlazorHero.CleanArchitecture.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("BlazorHero.CleanArchitecture.Shared.Models.Identity.BlazorHeroUser", null)
+                    b.HasOne("BlazorHero.CleanArchitecture.Application.Models.Identity.BlazorHeroUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("BlazorHero.CleanArchitecture.Application.Models.Identity.BlazorHeroUser", b =>
+                {
+                    b.Navigation("ChatHistoryFromUsers");
+
+                    b.Navigation("ChatHistoryToUsers");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,8 +1,11 @@
-﻿using BlazorHero.CleanArchitecture.Application.Interfaces.Services;
+﻿using BlazorHero.CleanArchitecture.Application.Helpers;
+using BlazorHero.CleanArchitecture.Application.Interfaces.Services;
+using BlazorHero.CleanArchitecture.Application.Models.Identity;
 using BlazorHero.CleanArchitecture.Infrastructure.Contexts;
-using BlazorHero.CleanArchitecture.Shared.Models.Identity;
+using BlazorHero.CleanArchitecture.Shared.Constants.Permission;
+using BlazorHero.CleanArchitecture.Shared.Constants.Role;
+using BlazorHero.CleanArchitecture.Shared.Constants.User;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
@@ -25,8 +28,7 @@ namespace BlazorHero.CleanArchitecture.Infrastructure
         }
 
         public void Initialize()
-        {
-            _db.Database.Migrate();
+        {     
             AddAdministrator();
             AddBasicUser();
             _db.SaveChanges();
@@ -37,8 +39,8 @@ namespace BlazorHero.CleanArchitecture.Infrastructure
             Task.Run(async () =>
             {
                 //Check if Role Exists
-                var adminRole = new IdentityRole(Constants.AdministratorRole);
-                var adminRoleInDb = await _roleManager.FindByNameAsync(Constants.AdministratorRole);
+                var adminRole = new IdentityRole(RoleConstant.AdministratorRole);
+                var adminRoleInDb = await _roleManager.FindByNameAsync(RoleConstant.AdministratorRole);
                 if (adminRoleInDb == null)
                 {
                     await _roleManager.CreateAsync(adminRole);
@@ -59,8 +61,15 @@ namespace BlazorHero.CleanArchitecture.Infrastructure
                 var superUserInDb = await _userManager.FindByEmailAsync(superUser.Email);
                 if (superUserInDb == null)
                 {
-                    await _userManager.CreateAsync(superUser, Constants.DefaultPassword);
-                    await _userManager.AddToRoleAsync(superUser, Constants.AdministratorRole);
+                    await _userManager.CreateAsync(superUser, UserConstant.DefaultPassword);
+                    var result = await _userManager.AddToRoleAsync(superUser, RoleConstant.AdministratorRole);
+                    if (result.Succeeded)
+                    {
+                        await _roleManager.GeneratePermissionClaimByModule(adminRole, PermissionModules.Users);
+                        await _roleManager.GeneratePermissionClaimByModule(adminRole, PermissionModules.Roles);
+                        await _roleManager.GeneratePermissionClaimByModule(adminRole, PermissionModules.Products);
+                        await _roleManager.GeneratePermissionClaimByModule(adminRole, PermissionModules.Brands);
+                    }
                     _logger.LogInformation("Seeded User with Administrator Role.");
                 }
             }).GetAwaiter().GetResult();
@@ -71,8 +80,8 @@ namespace BlazorHero.CleanArchitecture.Infrastructure
             Task.Run(async () =>
             {
                 //Check if Role Exists
-                var basicRole = new IdentityRole(Constants.BasicRole);
-                var basicRoleInDb = await _roleManager.FindByNameAsync(Constants.BasicRole);
+                var basicRole = new IdentityRole(RoleConstant.BasicRole);
+                var basicRoleInDb = await _roleManager.FindByNameAsync(RoleConstant.BasicRole);
                 if (basicRoleInDb == null)
                 {
                     await _roleManager.CreateAsync(basicRole);
@@ -93,8 +102,8 @@ namespace BlazorHero.CleanArchitecture.Infrastructure
                 var basicUserInDb = await _userManager.FindByEmailAsync(basicUser.Email);
                 if (basicUserInDb == null)
                 {
-                    await _userManager.CreateAsync(basicUser, Constants.DefaultPassword);
-                    await _userManager.AddToRoleAsync(basicUser, Constants.BasicRole);
+                    await _userManager.CreateAsync(basicUser, UserConstant.DefaultPassword);
+                    await _userManager.AddToRoleAsync(basicUser, RoleConstant.BasicRole);
                     _logger.LogInformation("Seeded User with Basic Role.");
                 }
             }).GetAwaiter().GetResult();

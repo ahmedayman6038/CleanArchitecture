@@ -2,6 +2,7 @@ using BlazorHero.CleanArchitecture.Application.Extensions;
 using BlazorHero.CleanArchitecture.Infrastructure.Extensions;
 using BlazorHero.CleanArchitecture.Server.Extensions;
 using BlazorHero.CleanArchitecture.Server.Middlewares;
+using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -24,13 +25,17 @@ namespace BlazorHero.CleanArchitecture.Server
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSignalR();
             services.AddDatabase(_configuration);
             services.AddIdentity();
             services.AddJwtAuthentication(services.GetApplicationSettings(_configuration));
             services.AddApplicationLayer();
             services.AddApplicationServices();
+            services.AddSharedInfrastructure(_configuration);
             services.RegisterSwagger();
             services.AddInfrastructureMappings();
+            services.AddHangfire(x => x.UseSqlServerStorage(_configuration.GetConnectionString("DefaultConnection")));
+            services.AddHangfireServer();
             services.AddControllers();
             services.AddRazorPages();
             services.AddApiVersioning(config =>
@@ -45,7 +50,8 @@ namespace BlazorHero.CleanArchitecture.Server
         {
             app.UseExceptionHandling(env);
             app.UseHttpsRedirection();
-            //app.UseMiddleware<ErrorHandlerMiddleware>();
+            app.UseHangfireDashboard("/jobs");
+            app.UseMiddleware<ErrorHandlerMiddleware>();
             app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();
             app.UseRouting();

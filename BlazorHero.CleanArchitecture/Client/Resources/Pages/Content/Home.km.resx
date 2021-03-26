@@ -120,6 +120,12 @@
   <data name="Description" xml:space="preserve">
     <value>គំរូកម្មវិធីដែលអភិវឌ្ឍតាមបច្ចេកវិទ្យា Blazor Web-Assembly</value>
   </data>
+  <data name="Project Page" xml:space="preserve">
+    <value>ទំព័រគម្រោង</value>
+  </data>
+  <data name="Support Me" xml:space="preserve">
+    <value>គាំទ្រយើងខ្ញុំ!</value>
+  </data>
   <data name="Title" xml:space="preserve">
     <value>ប្លេហ្សឺ ហេរ៉ូ</value>
   </data>
